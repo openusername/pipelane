@@ -56,7 +56,7 @@
       <div :class="$style.poppup__wrapTextInput">
         <input
           id="rent"
-          v-model="price"
+          v-model.number="price"
           type="number"
           placeholder="Rent price"
           min="0"
@@ -287,11 +287,12 @@ export default {
 
     label {
       position: absolute;
-      top: 0;
+      top: 1px;
       right: 21px;
       font-size: 16px;
-      padding: 21px 0;
+      padding: 20px 0;
       color: $color_base_200;
+      background: $color_base_50;
       @include user-select(none);
     }
 
@@ -368,6 +369,10 @@ export default {
         &.invalid {
           border: 1px solid $color_secondary_600;
         }
+      }
+
+      label {
+        background: $color_base_600;
       }
     }
 
