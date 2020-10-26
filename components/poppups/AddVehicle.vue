@@ -75,6 +75,9 @@
         value="compete"
         :class="$style.poppup__submit"
       >
+      <small v-if="error" :class="$style.poppup__error">
+        Something wrong. Try again (click the compete button).
+      </small>
     </form>
   </div>
 </template>
@@ -88,7 +91,8 @@ export default {
       name: '',
       description: '',
       price: '',
-      uploading: false
+      uploading: false,
+      error: false
     }
   },
 
@@ -115,7 +119,9 @@ export default {
       reader.readAsDataURL(e.target.files[0])
     },
 
-    async submitHandler () {
+    submitHandler () {
+      this.error = false
+
       if (this.$v.$invalid) {
         this.$v.$touch()
         return
@@ -129,12 +135,11 @@ export default {
       }
 
       this.uploading = true
-      const res = await this.$store.dispatch('vehicles/uploadVehicle', data)
-      if (res) {
-        this.$router.push('/custom')
-      }
 
-      this.uploading = false
+      this.$store.dispatch('vehicles/uploadVehicle', data)
+        .then(() => { this.$router.push('/custom') })
+        .catch((e) => { this.error = true })
+        .finally(() => { this.uploading = false })
     }
   }
 }
@@ -298,7 +303,6 @@ export default {
 
       small {
         color: $color_secondary_600;
-        font-weight: 700;
       }
   }
 
@@ -336,6 +340,10 @@ export default {
     background-image: url('/svg/loading.svg');
     background-repeat: no-repeat;
     background-position: center;
+  }
+
+  &__error {
+    color: $color_secondary_600;
   }
 }
 

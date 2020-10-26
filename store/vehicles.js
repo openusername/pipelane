@@ -33,9 +33,13 @@ export const mutations = {
 
 export const actions = {
   async fetchVehicles ({ dispatch, commit }) {
-    const vehicles = await getVehicles()
-    commit('setVehicles', vehicles)
-    dispatch('updateListCategories')
+    return await getVehicles()
+      .then((vehicles) => {
+        commit('setVehicles', vehicles)
+        dispatch('updateListCategories')
+        return Promise.resolve(vehicles)
+      })
+      .catch(e => Promise.reject(e))
   },
 
   updateListCategories ({ state, commit }) {
@@ -45,14 +49,19 @@ export const actions = {
 
   async uploadVehicle ({ dispatch, commit }, data) {
     /* Emulate request */
-    return await new Promise(resolve => setTimeout(() => {
-      resolve(data)
-    }, 1500))
+    return await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        Math.random() > 0.3
+          ? resolve(data)
+          : reject(new Error({ message: 'Some server error' }))
+      }, 1000)
+    })
       .then((data) => {
         commit('addCustomVehicle', data)
         dispatch('updateListCategories')
-        return true
+        return Promise.resolve(data)
       })
+      .catch(e => Promise.reject(e))
   }
 }
 
